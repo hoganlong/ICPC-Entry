@@ -214,6 +214,7 @@ public class Migrate
 	// globals are a bad idea ;)
 	List<int> candidates = new List<int>();
 	string debug = "";
+   Vertex3D[] vertexList;
 	Vector2D[] vertexPoints;
 	Marker[] mList;
 
@@ -226,15 +227,22 @@ public class Migrate
 
 		for(int index=1;index < candidates.Count ; index++)
 		{
-			distance = vertexPoints[candidates[choice]].Distance(near2);
-			if (distance < choiceDistance)
-			{
-				choice = index;
-				choiceDistance = distance;
-			}
+         if (vertexList[candidates[index]].target == false)
+         {
+            distance = vertexPoints[candidates[index]].Distance(near2);
+            if (distance < choiceDistance)
+            {
+  //             debug += " choice from " + choice.ToString() + " to " + index.ToString();
+               choice = index;
+               choiceDistance = distance;
+            }
+         }
 		}
 
-		int vertex = candidates[choice];
+      int vertex = candidates[choice];
+
+//      debug += " Picked choice " + choice.ToString() + " vertex " + vertex.ToString() + " at distance " + choiceDistance.ToString();
+		
 		candidates.RemoveAt(choice);
 		return vertex;
 	}
@@ -265,16 +273,13 @@ public class Migrate
 
 	private void Run()
 	{
-
-	
-
 		// Read the static parts of the map.
 
 		// Read the list of vertex locations.
 		int n = int.Parse(Console.ReadLine());
 
 		// List of points in the map.
-		Vertex3D[] vertexList = new Vertex3D[n];
+		vertexList = new Vertex3D[n];
 		vertexPoints = new Vector2D[n];
 
 		for (int i = 0; i < n; i++)
@@ -282,7 +287,6 @@ public class Migrate
 			string[] tokens = Console.ReadLine().Split();
 			vertexList[i] = new Vertex3D(int.Parse(tokens[0]),int.Parse(tokens[1]),int.Parse(tokens[2]));
 			vertexPoints[i] = new Vector2D(int.Parse(tokens[0]), int.Parse(tokens[1]));
-										
 		}
 
 		// Read the list of region outlines.
@@ -405,7 +409,8 @@ public class Migrate
 						if (candidates.Count > 0)
 						{
 							p.targetVertex = PickAVertex(p.pos);
-                            p.myTask = (int)Pusher.Tasks.move2vertex;
+                     vertexList[p.targetVertex].target = true;
+                     p.myTask = (int)Pusher.Tasks.move2vertex;
 							p.jobTime = 0;  // added HL
 						}
 						else
@@ -426,25 +431,53 @@ public class Migrate
 				// Choose a move direction in support of our current goal.
 				if (p.myTask == (int)Pusher.Tasks.move2vertex)
 				{
-					// Get behind our marker and push it toward its destination.
+				
 					Vertex3D v = vertexList[p.targetVertex];
 					Vector2D dest = new Vector2D(v.x, v.y);
 
-					if (((System.Math.Abs(mList[p.myMarker].pos.x - dest.x) < 2) && (System.Math.Abs(mList[p.myMarker].pos.y - dest.y) < 2)) || (vertexColors[p.targetVertex] == 1))
+               bool done = false;
+
+               if (vertexColors[p.targetVertex] == 1) done = true; // it converted while I was moving
+               else if (mList[p.myMarker].pos.Distance(dest) < 2.0) done = true; // I'm there.
+               else if (vertexList[p.targetVertex].x == 0) // on the left edge
+               {
+               //   debug += "on left edge";
+                 // debug += " p.pos.x=" + p.pos.x.ToString() + " p.pos.y=" + p.pos.y.ToString() + " target.y=" + vertexList[p.targetVertex].y.ToString() + " target.x=" + vertexList[p.targetVertex].x.ToString();
+                  if ((p.pos.x < 6.0) && (p.pos.y > vertexList[p.targetVertex].y - 2) && (p.pos.y < vertexList[p.targetVertex].y + 2))
+                     done = true;
+               }
+               else if (vertexList[p.targetVertex].y == 0) // on the bottom
+               {
+               //   debug += "on bottom edge";
+              //    debug += " p.pos.x=" + p.pos.x.ToString() + " p.pos.y=" + p.pos.y.ToString() + " target.y=" + vertexList[p.targetVertex].y.ToString() + " target.x=" + vertexList[p.targetVertex].x.ToString();
+                  if ((p.pos.y < 6.0) && (p.pos.x > vertexList[p.targetVertex].x - 2) && (p.pos.x < vertexList[p.targetVertex].x + 2))
+                     done = true;
+               }
+
+               if (done)
+					//if (((System.Math.Abs(mList[p.myMarker].pos.x - dest.x) < 2) && (System.Math.Abs(mList[p.myMarker].pos.y - dest.y) < 2)) || (vertexColors[p.targetVertex] == 1))
 					{
-						debug += " P" + pdex.ToString() + ":Hit It";
+                  vertexList[p.targetVertex].target = false;
+						//debug += " P" + pdex.ToString() + ":Hit It";
+                  mList[p.myMarker].beingPushedBy = -1;
 
-						int grey2move = FindNearest(p.pos,GREY);
+                  int grey2move = FindNearest(p.pos, GREY);
 
-						mList[p.myMarker].beingPushedBy = -1;
-						p.myTask = (int)Pusher.Tasks.move2home;
-						p.myMarker = grey2move;
-						mList[p.myMarker].beingPushedBy = pdex;
-						p.jobTime = 0;
-						debug += " P" + pdex.ToString() + ":Moved to marker " + grey2move.ToString();
+                  if (mList[grey2move].color == GREY)
+                  {
+                     p.myTask = (int)Pusher.Tasks.move2home;
+                     p.myMarker = grey2move;
+                     mList[p.myMarker].beingPushedBy = pdex;
+                     p.jobTime = 0;
+                  }
+                  else
+                  {
+                     p.myTask = (int)Pusher.Tasks.sleep;
+                  }
+					//	debug += " P" + pdex.ToString() + ":Moved to marker " + grey2move.ToString();
 					}
 					else
-					{
+               {  	// Get behind our marker and push it toward its destination.
 						if (MoveAround(p, mList[p.myMarker], dest))
 						{
 							Vector2D mToD = (dest - mList[p.myMarker].pos).Norm();
@@ -460,10 +493,11 @@ public class Migrate
 						if (candidates.Count > 0)
 						{
 							p.targetVertex = PickAVertex(p.pos);
+                     vertexList[p.targetVertex].target = true;
 							p.myTask = (int)Pusher.Tasks.move2vertex;
 							p.jobTime = 0;  
 
-							debug = " P" + pdex.ToString() + ":aiming for vertex " + p.targetVertex.ToString();
+						//	debug += " P" + pdex.ToString() + ":aiming for vertex " + p.targetVertex.ToString();
 						
 						}
 						else
@@ -475,20 +509,20 @@ public class Migrate
 					//	p.myTask = (int)Pusher.Tasks.sleep;
 					}
 					else
-					{
-						if ((mList[p.myMarker].pos.x < 18) && (mList[p.myMarker].pos.y < 18))
+					{      	
+                  Vector2D dest = new Vector2D(0, 0);
+						
+                  if (mList[p.myMarker].pos.Distance(dest) < 20)
 						{
 							mList[p.myMarker].beingPushedBy = -1;
 							p.myTask = (int)Pusher.Tasks.sleep;
-							p.myMarker = FindNearest(p.pos,RED);  // we should make sure this is red.
+							p.myMarker = FindNearest(p.pos,RED);  
 							mList[p.myMarker].beingPushedBy = pdex;
 							p.jobTime = 0;
-							debug += " P" + pdex.ToString() + ":Moved to marker " + pdex.ToString();
+				//			debug += " P" + pdex.ToString() + ":Moved to marker " + pdex.ToString();
 						}
 						else
 						{
-							Vector2D dest = new Vector2D(0, 0);
-
 							if (MoveAround(p, mList[p.myMarker], dest))
 							{
 								Vector2D mToD = (dest - mList[p.myMarker].pos).Norm();
