@@ -71,11 +71,7 @@ public class Map
 		for (int i = 0; i < mList.Length; i++)
 			mList[i] = new Marker();
 
-		for (int i = 0; i <= 3; i++)
-		{
-			pList[i].myMarker = i;
-			mList[i].beingPushedBy = i;
-		}
+	
 
 
 	}

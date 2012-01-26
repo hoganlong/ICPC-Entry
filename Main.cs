@@ -243,6 +243,12 @@ public class Migrate
 
 		map.ReadStatic();
 
+		for (int i = 0; i <= 3; i++)
+		{
+			map.pList[i].myMarker = i;
+			map.mList[i].beingPushedBy = i;
+		}
+
 		int turnNum = int.Parse(Console.ReadLine());
 		while (turnNum >= 0)
 		{
@@ -312,7 +318,7 @@ public class Migrate
                bool done = false;
 
 			   if (map.vertexColors[p.targetVertex] == 1) done = true; // it converted while I was moving
-			   else if (map.mList[p.myMarker].pos.Distance(dest) < 2.0) done = true; // I'm there.
+			   else if ((map.mList[p.myMarker].pos.Distance(dest) < 2.0) && (map.mList[p.myMarker].pos.x > 2 && map.mList[p.myMarker].pos.y > 2)) done = true; // I'm there. (>2 so we don't jam the edges)
 			   else if (map.vertexList[p.targetVertex].x == 0) // on the left edge
                {
                //   debug += "on left edge";
