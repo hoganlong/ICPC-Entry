@@ -1,4 +1,11 @@
 *.exe
+*.csproj
+*.csproj.user
+*.suo
+*.sln
 ICPC/*
+Project1/*
+bin/*
+obj/*
 
 
