@@ -70,10 +70,6 @@ public class Map
 		mList = new Marker[MCOUNT];
 		for (int i = 0; i < mList.Length; i++)
 			mList[i] = new Marker();
-
-	
-
-
 	}
 
 	// Runs every turn

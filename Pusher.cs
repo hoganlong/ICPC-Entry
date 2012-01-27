@@ -3,15 +3,8 @@
 
 
 // Simple representation for a pusher.
-class Pusher
+public class Pusher
 {
-	public enum Tasks
-	{
-		sleep,
-		move2vertex,
-		move2home
-	}
-	
 	// Position of the pusher.
 	public Vector2D pos = new Vector2D(0, 0);
 
@@ -20,20 +13,10 @@ class Pusher
 
 	public string MoveThisTurn = "";
 
-	public int myTask;
-
-	public int myMarker;
-
-	// How long we've been doing the current job.  If
-	// this number gets to large, we'll pick a new job.
-
-	public int jobTime;
-
-	// Target vertex for this pusher.
-	public int targetVertex;
+	public BaseGoal myGoal = null;
 
 	public Pusher()
 	{
-		myTask = (int)Tasks.sleep;
+		
 	}
 };

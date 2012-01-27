@@ -10,8 +10,8 @@ public class Marker
 
 	// Marker velocity
 	public Vector2D vel = new Vector2D(0, 0);
-
-	public int beingPushedBy = -1;
+ 
+	public BaseGoal beingUsedBy = null;
 
 	// Marker color
 	public int color;
