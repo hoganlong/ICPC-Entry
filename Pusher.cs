@@ -14,6 +14,7 @@ public class Pusher
 	public string MoveThisTurn = "";
 
 	public BaseGoal myGoal = null;
+	public BasePlan myPlan = null;
 
 	public Pusher()
 	{

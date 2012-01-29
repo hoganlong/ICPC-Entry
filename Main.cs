@@ -48,6 +48,10 @@ public class Migrate
 		map.ReadStatic();
    
 		int turnNum = int.Parse(Console.ReadLine());
+
+		map.pList[0].myPlan = new SwitchingPlan(map.pList[0]);
+		map.pList[1].myPlan = new SwitchingPlan(map.pList[1]);
+		map.pList[2].myPlan = new SwitchingPlan(map.pList[2]);
   
 		while (turnNum >= 0)
 		{
@@ -60,30 +64,13 @@ public class Migrate
 				Pusher p = map.pList[pdex];
 				p.MoveThisTurn = "";
 
-				if (p.myGoal == null) p.myGoal = new MoveMarkerToVertexGoal(map, p, turnNum);
-
+				if (p.myGoal == null) p.myGoal = p.myPlan.GetNextGoal(map, turnNum);
+				
 				if (p.myGoal.Done(map, turnNum))
 				{
-					string oldName = p.myGoal.Name();
-
 					p.myGoal.CleanUp();
-					p.myGoal = null;
-
-					if (oldName == "MoveToVertex")
-					{
-						p.myGoal = new TurnGreyMarkerRedGoal(map, p, turnNum);
-						if (p.myGoal.Done(map,turnNum))
-						{
-							p.myGoal.CleanUp();
-							p.myGoal = new MoveMarkerToVertexGoal(map, p, turnNum);
-						}
-					}
-
-					if (oldName == "TurnToRed")
-					{
-						p.myGoal = new MoveMarkerToVertexGoal(map,p, turnNum);
 					
-					}
+					p.myGoal = p.myPlan.GetNextGoal(map,turnNum);
 				}
 				else
 				{
