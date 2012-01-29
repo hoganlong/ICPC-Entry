@@ -94,8 +94,7 @@ class GoalUtility
    function is used by the two-dimensional MoveTo function to
    compute an acceleration vector toward the target after movement
    perp to the target direction has been cancelled out. */
-	static private double MoveTo(double pos, double vel, double target,
-						   double alim)
+	static private double MoveTo(double pos, double vel, double target,	double alim)
 	{
 		// Compute how far pos has to go to hit target.
 		double dist = target - pos;
