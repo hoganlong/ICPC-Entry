@@ -94,8 +94,7 @@ class GoalUtility
    function is used by the two-dimensional MoveTo function to
    compute an acceleration vector toward the target after movement
    perp to the target direction has been cancelled out. */
-	static private double MoveTo(double pos, double vel, double target,
-						   double alim)
+	static private double MoveTo(double pos, double vel, double target,	double alim)
 	{
 		// Compute how far pos has to go to hit target.
 		double dist = target - pos;
@@ -290,8 +289,10 @@ public class MoveMarkerToVertexGoal : BaseGoal
 
 	public override void CleanUp()
 	{
-		myMarker.beingUsedBy = null;
-		targetVertex.target = false;
+		if (myMarker != null)
+		  myMarker.beingUsedBy = null;
+		if (targetVertex != null)
+		  targetVertex.target = false;
 	}
 
 	public override string Name()
@@ -305,6 +306,7 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 	Pusher me = null;
 	Marker myMarker = null;
 	Vector2D dest = new Vector2D(0, 0);
+	bool donefor = false;
 
 	public TurnGreyMarkerRedGoal(Map map, Pusher inMe, int turn) : base(map, inMe, turn)
 	{
@@ -314,14 +316,20 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 		int tmp = GoalUtility.FindNearest(map, me.pos, Map.GREY);
 		if (tmp == -1)
      		tmp = GoalUtility.FindNearest(map, me.pos, Map.BLUE);
+		if (tmp == -1)
+			donefor = true;
+		else
+		{
+			myMarker = map.mList[tmp];
 
-		myMarker = map.mList[tmp];
-
-		myMarker.beingUsedBy = this;
+			myMarker.beingUsedBy = this;
+		}
 	}
 
 	public override void Action(Map map)
 	{
+		if (donefor) return;
+
 		if (GoalUtility.MoveAround(me, myMarker, dest))
 		{
 			Vector2D mToD = (dest - myMarker.pos).Norm();
@@ -332,6 +340,10 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 	public override bool Done(Map map, int turn)
 	{
 		// we should check to see if we have not gotten anywhere
+
+		// we can't find something to move!
+		if (donefor)
+			return true;
 
 		if (turn > startTime + 55)
 			return true;
@@ -347,7 +359,8 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 
 	public override void CleanUp()
 	{
-		myMarker.beingUsedBy = null;
+		if (myMarker != null)
+			myMarker.beingUsedBy = null;
 	}
 
 	public override string Name()
