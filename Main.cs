@@ -55,9 +55,9 @@ public class Migrate
   
 		while (turnNum >= 0)
 		{
-			map.ReadTurn();
+			map.ReadTurn(turnNum);
 
-			map.StartTurnWork();
+			map.StartTurnWork(turnNum);
  
 			for (int pdex = 0; pdex < Map.PCOUNT; pdex++)
 			{

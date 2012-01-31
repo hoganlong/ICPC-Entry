@@ -16,8 +16,7 @@ class GoalUtility
 
 	// Maximum acceleration for a pusher
 	const double PUSHER_ACCEL_LIMIT = 2.0;
-
-
+  
 	// Radius of the marker
 	const double MARKER_RADIUS = 2;
 
@@ -31,26 +30,26 @@ class GoalUtility
 	{
 		// assume we have at least one element in candidates
 		int choice = 0;
-		double distance;
-		double choiceDistance = map.vertexPoints[map.candidates[choice]].Distance(near2);
+		double distance = double.NaN;
+		double choiceDistance = double.PositiveInfinity;
 
-		for (int index = 1; index < map.candidates.Count; index++)
+		foreach (int item in map.candidates)
 		{
-			if (map.vertexList[map.candidates[index]].target == false)
+			if (map.vertexList[item].target == false)
 			{
-				distance = map.vertexPoints[map.candidates[index]].Distance(near2);
+				distance = map.vertexPoints[item].Distance(near2);
+
 				if (distance < choiceDistance)
 				{
-					choice = index;
+					choice = item;
 					choiceDistance = distance;
 				}
 			}
 		}
+ 
+		map.candidates.Remove(choice);
 
-		int vertex = map.candidates[choice];
-
-		map.candidates.RemoveAt(choice);
-		return vertex;
+		return choice;
 	}
 
 	static public int FindNearest(Map map, Vector2D near2, int color)
