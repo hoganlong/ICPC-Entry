@@ -16,8 +16,7 @@ class GoalUtility
 
 	// Maximum acceleration for a pusher
 	const double PUSHER_ACCEL_LIMIT = 2.0;
-
-
+  
 	// Radius of the marker
 	const double MARKER_RADIUS = 2;
 
@@ -31,26 +30,26 @@ class GoalUtility
 	{
 		// assume we have at least one element in candidates
 		int choice = 0;
-		double distance;
-		double choiceDistance = map.vertexPoints[map.candidates[choice]].Distance(near2);
+		double distance = double.NaN;
+		double choiceDistance = double.PositiveInfinity;
 
-		for (int index = 1; index < map.candidates.Count; index++)
+		foreach (int item in map.candidates)
 		{
-			if (map.vertexList[map.candidates[index]].target == false)
+			if (map.vertexList[item].target == false)
 			{
-				distance = map.vertexPoints[map.candidates[index]].Distance(near2);
+				distance = map.vertexPoints[item].Distance(near2);
+
 				if (distance < choiceDistance)
 				{
-					choice = index;
+					choice = item;
 					choiceDistance = distance;
 				}
 			}
 		}
+ 
+		map.candidates.Remove(choice);
 
-		int vertex = map.candidates[choice];
-
-		map.candidates.RemoveAt(choice);
-		return vertex;
+		return choice;
 	}
 
 	static public int FindNearest(Map map, Vector2D near2, int color)
@@ -289,8 +288,10 @@ public class MoveMarkerToVertexGoal : BaseGoal
 
 	public override void CleanUp()
 	{
-		myMarker.beingUsedBy = null;
-		targetVertex.target = false;
+		if (myMarker != null)
+		  myMarker.beingUsedBy = null;
+		if (targetVertex != null)
+		  targetVertex.target = false;
 	}
 
 	public override string Name()
@@ -304,6 +305,7 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 	Pusher me = null;
 	Marker myMarker = null;
 	Vector2D dest = new Vector2D(0, 0);
+	bool donefor = false;
 
 	public TurnGreyMarkerRedGoal(Map map, Pusher inMe, int turn) : base(map, inMe, turn)
 	{
@@ -313,14 +315,20 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 		int tmp = GoalUtility.FindNearest(map, me.pos, Map.GREY);
 		if (tmp == -1)
      		tmp = GoalUtility.FindNearest(map, me.pos, Map.BLUE);
+		if (tmp == -1)
+			donefor = true;
+		else
+		{
+			myMarker = map.mList[tmp];
 
-		myMarker = map.mList[tmp];
-
-		myMarker.beingUsedBy = this;
+			myMarker.beingUsedBy = this;
+		}
 	}
 
 	public override void Action(Map map)
 	{
+		if (donefor) return;
+
 		if (GoalUtility.MoveAround(me, myMarker, dest))
 		{
 			Vector2D mToD = (dest - myMarker.pos).Norm();
@@ -331,6 +339,10 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 	public override bool Done(Map map, int turn)
 	{
 		// we should check to see if we have not gotten anywhere
+
+		// we can't find something to move!
+		if (donefor)
+			return true;
 
 		if (turn > startTime + 55)
 			return true;
@@ -346,7 +358,8 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 
 	public override void CleanUp()
 	{
-		myMarker.beingUsedBy = null;
+		if (myMarker != null)
+			myMarker.beingUsedBy = null;
 	}
 
 	public override string Name()
