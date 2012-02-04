@@ -81,7 +81,7 @@ public class Map
 	internal void ReadStatic()
 	{
 		// Read the list of vertex locations.
-		int n = int.Parse(Console.ReadLine());
+		int n = int.Parse(IO.ReadLine());
 
 		// List of points in the map.
 		vertexList = new Vertex3D[n];
@@ -90,7 +90,7 @@ public class Map
 
 		for (int i = 0; i < n; i++)
 		{
-			string[] tokens = Console.ReadLine().Split();
+			string[] tokens = IO.ReadLine().Split();
 			vertexList[i] = new Vertex3D(int.Parse(tokens[0]), int.Parse(tokens[1]), int.Parse(tokens[2]));
 			vertexPoints[i] = new Vector2D(int.Parse(tokens[0]), int.Parse(tokens[1]));
 			vertexColors[i] = 0;
@@ -101,12 +101,12 @@ public class Map
 
 
 		// Read the list of region outlines.
-		n = int.Parse(Console.ReadLine());
+		n = int.Parse(IO.ReadLine());
 		// List of regions in the map
 		regionList = new Region[n];
 		for (int regionNumber = 0; regionNumber < n; regionNumber++)
 		{
-			string[] tokens = Console.ReadLine().Split();
+			string[] tokens = IO.ReadLine().Split();
 			int vertexCount = int.Parse(tokens[0]);
 			regionList[regionNumber] = new Region();
       		regionList[regionNumber].vertexList = new int[vertexCount];
@@ -134,12 +134,12 @@ public class Map
 	// Runs every turn
 	internal void ReadTurn(int turnNum)
 	{
-		string[] tokens = Console.ReadLine().Split();
+		string[] tokens = IO.ReadLine().Split();
 		score[RED] = int.Parse(tokens[0]);
 		score[BLUE] = int.Parse(tokens[1]);
 
 		// Read all the region colors.
-		tokens = Console.ReadLine().Split();
+		tokens = IO.ReadLine().Split();
 		int n = int.Parse(tokens[0]);
 		for (int i = 0; i < regionList.Length; i++)
 		{
@@ -152,10 +152,10 @@ public class Map
 		}
 
 		// Read all the pusher locations.
-		n = int.Parse(Console.ReadLine());
+		n = int.Parse(IO.ReadLine());
 		for (int i = 0; i < pList.Length; i++)
 		{
-			tokens = Console.ReadLine().Split();
+			tokens = IO.ReadLine().Split();
 			pList[i].pos.x = double.Parse(tokens[0]);
 			pList[i].pos.y = double.Parse(tokens[1]);
 			pList[i].vel.x = double.Parse(tokens[2]);
@@ -163,10 +163,10 @@ public class Map
 		}
 
 		// Read all the marker locations.
-		n = int.Parse(Console.ReadLine());
+		n = int.Parse(IO.ReadLine());
 		for (int i = 0; i < n; i++)
 		{
-			tokens = Console.ReadLine().Split();
+			tokens = IO.ReadLine().Split();
 			mList[i].pos.x = double.Parse(tokens[0]);
 			mList[i].pos.y = double.Parse(tokens[1]);
 			mList[i].vel.x = double.Parse(tokens[2]);
