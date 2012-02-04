@@ -47,7 +47,7 @@ public class Migrate
 
 		map.ReadStatic();
    
-		int turnNum = int.Parse(Console.ReadLine());
+		int turnNum = int.Parse(IO.ReadLine());
 
 		map.pList[0].myPlan = new SwitchingPlan(map.pList[0]);
 		map.pList[1].myPlan = new SwitchingPlan(map.pList[1]);
@@ -78,30 +78,30 @@ public class Migrate
 				}
   
 				if (p.MoveThisTurn == "")
-					Console.Write("0.0 0.0");
+					IO.Write("0.0 0.0");
 				else
-					Console.Write(p.MoveThisTurn);
+					IO.Write(p.MoveThisTurn);
 
 				// Print a space or a newline depending on whether we're at the last pusher.
 				if (pdex + 1 < Map.PCOUNT)
 				{
-					Console.Write(" ");
+					IO.Write(" ");
 					//Console.Error.Write(" ");
 				}
 				else
 				{
-					Console.WriteLine();
+					IO.WriteLine();
 					//Console.Error.WriteLine();
 				}
 			}
 
 			if (debug.Length > 0)
 			{
-				Console.Error.Write("Turn " + turnNum.ToString() + " - ");
-				Console.Error.WriteLine(debug);
+				IO.ErrorWrite("Turn " + turnNum.ToString() + " - ");
+				IO.ErrorWriteLine(debug);
 				debug = "";
 			}
-			turnNum = int.Parse(Console.ReadLine());
+			turnNum = int.Parse(IO.ReadLine());
 			if (turnNum == -1) return;
 		}
 	}
