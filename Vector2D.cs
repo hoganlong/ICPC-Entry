@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-// Simple representation of a 2D poin/vector.  C# may already
+// Simple representation of a 2D point/vector.  C# may already
 // provide something like this.  If so, I should have used it
 // instead.
 
@@ -47,8 +47,7 @@ public class Vector2D
 	{
 		double s = Math.Sin(r);
 		double c = Math.Cos(r);
-		return new Vector2D(x * c - y * s,
-							 x * s + y * c);
+		return new Vector2D(x * c - y * s,	 x * s + y * c);
 	}
 
 	// Return a cross product of this and b.
@@ -69,6 +68,12 @@ public class Vector2D
 		return Vector2D.Distance(this, b);
 	}
 
+	public double Distance(Point2D b)
+	{
+		return Point2D.Distance(this, b);
+	}
+
+	
 	// Return a vector pointing in the same direction as this, but with
 	// magnitude no greater than d.
 	public Vector2D Limit(double d)

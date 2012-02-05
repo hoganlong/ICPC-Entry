@@ -405,12 +405,12 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 			Region r = Map.regionList[regionNumber];
 			if ((r.redCount > r.blueCount) && (r.redCount > r.greyCount))
 			{
-				Vector2D loc = Map.vertexList[r.vertexList[0]].pos;
+				Point2D loc = Map.vertexList[r.vertexList[0]].pos;
 				double d = myMarker.pos.Distance(loc);
 				if (d < goalDistance)
 				{
 					goalDistance = d;
-					dest = loc;
+					dest = loc.GetAsVector();
 					destRegion = regionNumber;
 				}
 			}
