@@ -104,8 +104,7 @@ class GoalUtility
 
 		// How many steps, at minimum, would cover the remaining distance
 		// and then stop.
-		double steps = Math.Ceiling((-1 + Math.Sqrt(1 + 8.0 * Math.Abs(dist) / alim))
-								 / 2.0);
+		double steps = Math.Ceiling((-1 + Math.Sqrt(1 + 8.0 * Math.Abs(dist) / alim)) / 2.0);
 		if (steps < 1)
 			steps = 1;
 
@@ -153,8 +152,7 @@ class GoalUtility
 		// If we have remaining force to spend, use it to move toward the target.
 		if (Math.Abs(f2) < PUSHER_ACCEL_LIMIT)
 		{
-			double raccel = Math.Sqrt(PUSHER_ACCEL_LIMIT * PUSHER_ACCEL_LIMIT -
-									   v2 * v2);
+			double raccel = Math.Sqrt(PUSHER_ACCEL_LIMIT * PUSHER_ACCEL_LIMIT -	v2 * v2);
 			f1 = GoalUtility.MoveTo(-dist, v1, 0.0, raccel);
 		}
 
@@ -179,7 +177,7 @@ class GoalUtility
 		// Figure out how far around the target we need to go, we're
 		// going to move around a little bit at a time so we don't hit
 		// the target.
-		double moveAngle = Math.Acos(mToT * mToP);
+		double moveAngle = Math.PI - Math.Acos(mToT * mToP);
 		if (moveAngle > Math.PI * 0.25)
 			moveAngle = Math.PI * 0.25;
 
@@ -368,3 +366,114 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 	}
 }
 
+public class TurnGreyMarkerRedGoal2 : BaseGoal
+{
+	Pusher me = null;
+	Marker myMarker = null;
+	Vector2D dest = new Vector2D(0, 0);
+	int destRegion = 0;
+	bool donefor = false;
+
+	public TurnGreyMarkerRedGoal2(Map map, Pusher inMe, int turn)
+		: base(map, inMe, turn)
+	{
+		me = inMe;
+
+		// Find a marker to move
+		int tmp = GoalUtility.FindNearest(map, me.pos, Map.GREY);
+		if (tmp == -1)
+			tmp = GoalUtility.FindNearest(map, me.pos, Map.BLUE);
+		if (tmp == -1)
+			donefor = true;
+		else
+		{
+			myMarker = map.mList[tmp];
+
+			myMarker.beingUsedBy = this;
+		}
+
+		double goalDistance = myMarker.pos.Distance(dest);
+ 		// find nearest area to move to -- for now lets do a brute force search	for the closest that returns red.
+		for (int regionNumber = 1; regionNumber < map.regionList.Length; regionNumber++)
+		{
+			Region r = map.regionList[regionNumber];
+			if ((r.redCount > r.blueCount) && (r.redCount > r.greyCount))
+			{
+				Vector2D loc = map.vertexList[r.vertexList[0]].pos;
+				double d = myMarker.pos.Distance(loc);
+				if (d < goalDistance)
+				{
+					goalDistance = d;
+					dest = loc;
+					destRegion = regionNumber;
+				}
+			}
+		}
+	}
+
+	public override void Action(Map map)
+	{
+		if (donefor) return;
+
+		if (GoalUtility.MoveAround(me, myMarker, dest))
+		{
+			Vector2D mToD = (dest - myMarker.pos).Norm();
+			GoalUtility.MoveTo(me, myMarker.pos - mToD);
+		}
+	}
+
+	public override bool Done(Map map, int turn)
+	{
+		// we should check to see if we have not gotten anywhere
+
+		// we can't find something to move!
+		if (donefor)
+			return true;
+
+		if (turn > startTime + 55)
+			return true;
+
+		if (myMarker.color == Map.RED)
+			return true;
+
+		HashSet<int> regionsTouched = RegionMap.GetRegions(myMarker.pos);
+		if (regionsTouched.Contains(destRegion) && regionsTouched.Count == 1)
+		{
+			//// we might be done, we have to check that we are being turned.
+			//bool allRed = true;
+
+			//foreach (int regionNumber in regionsTouched)
+			//{
+			//    Region r = map.regionList[regionNumber];
+			//    if ((r.redCount < r.blueCount) || (r.redCount < r.greyCount))
+			//        allRed = false;
+			//    return allRed;
+			//}
+			return true;
+		}
+
+		// check if we are in a red area anyway.
+		if (regionsTouched.Count == 1)
+		{
+			Region r = map.regionList[regionsTouched.First()];
+			if ((r.redCount > r.blueCount) && (r.redCount > r.greyCount))
+				return true;
+		}
+		
+	//	if (myMarker.pos.Distance(dest) < 20)
+	//	return true;
+
+		return false;
+	}
+
+	public override void CleanUp()
+	{
+		if (myMarker != null)
+			myMarker.beingUsedBy = null;
+	}
+
+	public override string Name()
+	{
+		return "TurnToRed";
+	}
+}

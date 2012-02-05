@@ -51,3 +51,42 @@ public class SwitchingPlan : BasePlan
 		return lastGoal;
 	}
 }
+
+// Switch between getting vertex and converting grey.
+// Same plan from the start -- the most basic strategy.
+// now we don't move home for turn grey red.
+public class SwitchingPlan2 : BasePlan
+{
+	BaseGoal lastGoal = null;
+
+	public SwitchingPlan2(Pusher me)
+		: base(me)
+	{
+	}
+
+	public override BaseGoal GetNextGoal(Map map, int turnNum)
+	{
+		if (lastGoal == null)
+		{
+			lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+		}
+		else
+		{
+			if (lastGoal.Name() == "MoveToVertex")
+			{
+				lastGoal = new TurnGreyMarkerRedGoal2(map, myP, turnNum);
+				if (lastGoal.Done(map, turnNum))
+				{
+					lastGoal.CleanUp();
+					lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+				}
+			}
+			else // oldName == "TurnToRed"
+			{
+				lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+			}
+		}
+
+		return lastGoal;
+	}
+}

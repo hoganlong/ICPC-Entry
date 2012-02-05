@@ -13,6 +13,8 @@ public class Marker
  
 	public BaseGoal beingUsedBy = null;
 
+	public HashSet<int> myRegions = null;
+
 	// Marker color
 	public int color;
 };

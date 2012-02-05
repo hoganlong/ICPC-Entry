@@ -22,7 +22,12 @@ static public class RegionMap
 			for (int y = 0; y <= 100; y++)
 				loc[x, y] = new RegionMapPoint();
 	}
-	
+
+	static public HashSet<int> GetRegions(Vector2D pos)
+	{
+		return GetRegions((int)Math.Floor(pos.x), (int)Math.Floor(pos.y));
+	}
+
 	static public HashSet<int> GetRegions(int x, int y)
 	{
 		HashSet<int> result = new HashSet<int>();

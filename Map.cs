@@ -75,6 +75,85 @@ public class Map
 
 	internal void MarkerColorChanged(int markerNumber, int oldColor, int newColor)
 	{
+		foreach (int regionIndex in mList[markerNumber].myRegions)
+		{
+			switch (oldColor)
+			{
+				case Map.RED:
+					regionList[regionIndex].redCount--;
+					break;
+				case Map.BLUE:
+					regionList[regionIndex].blueCount--;
+					break;
+				case Map.GREY:
+					regionList[regionIndex].greyCount--;
+					break;
+			}
+
+			switch (newColor)
+			{
+				case Map.RED:
+					regionList[regionIndex].redCount++;
+					break;
+				case Map.BLUE:
+					regionList[regionIndex].blueCount++;
+					break;
+				case Map.GREY:
+					regionList[regionIndex].greyCount++;
+					break;
+			}
+ 		}
+	}
+
+	
+	internal void RegionListChanged(int markerNumber, HashSet<int> newRegionList)
+	{
+		HashSet<int> oldRegionList = mList[markerNumber].myRegions;
+
+	    HashSet<int> noLongerIn = new HashSet<int>();
+		noLongerIn.UnionWith(oldRegionList);
+		noLongerIn.ExceptWith(newRegionList);
+
+		HashSet<int> newRegions = new HashSet<int>();
+		newRegions.UnionWith(newRegionList);
+		newRegions.ExceptWith(oldRegionList);
+
+		foreach (int regionIndex in noLongerIn)
+		{
+			regionList[regionIndex].markerList.Remove(markerNumber);
+
+			switch (mList[markerNumber].color)
+			{
+				case Map.RED:
+					regionList[regionIndex].redCount--;
+					break;
+				case Map.BLUE:
+					regionList[regionIndex].blueCount--;
+					break;
+				case Map.GREY:
+					regionList[regionIndex].greyCount--;
+					break;
+			}
+		}
+
+		foreach (int regionIndex in newRegions)
+		{
+			regionList[regionIndex].markerList.Add(markerNumber);
+
+			switch (mList[markerNumber].color)
+			{
+				case Map.RED:
+					regionList[regionIndex].redCount++;
+					break;
+				case Map.BLUE:
+					regionList[regionIndex].blueCount++;
+					break;
+				case Map.GREY:
+					regionList[regionIndex].greyCount++;
+					break;
+			}
+		}
+
 	}
 
 	// Runs once before first turn
@@ -177,9 +256,20 @@ public class Map
 				if (turnNum != 0) MarkerColorChanged(i, mList[i].color, c);
 				mList[i].color = c;
 			}
-		}
-	}
 
+			if (turnNum != 0)
+			{
+				HashSet<int> rList = RegionMap.GetRegions(mList[i].pos);
+				if (!rList.SetEquals(mList[i].myRegions))
+				{
+					RegionListChanged(i, rList);
+					mList[i].myRegions = rList;
+				}
+			}
+		}
+
+	}
+ 
 	internal void StartTurnWork(int turnNum)
 	{
 		if (turnNum == 0)
@@ -208,9 +298,38 @@ public class Map
 					candidates.Add(i);
 				}
 
+			for (int mIndex = 0; mIndex < mList.Length; mIndex++)
+			{
+				HashSet<int> rList = RegionMap.GetRegions(mList[mIndex].pos);
+
+				foreach (int regionIndex in rList)
+				{
+					regionList[regionIndex].markerList.Add(mIndex);
+
+					switch (mList[mIndex].color)
+					{
+						case Map.RED:
+							regionList[regionIndex].redCount++;
+							break;
+						case Map.BLUE:
+							regionList[regionIndex].blueCount++;
+							break;
+						case Map.GREY:
+							regionList[regionIndex].greyCount++;
+							break;
+					}
+				}
+
+				mList[mIndex].myRegions = rList;
+			}
+
+			regionList[0].redCount = 10000;  // some serious redness
+
 			//Console.Error.Write("Candidates: ");
 			//foreach (int x in candidates) Console.Error.Write(" " + x.ToString());
 			//Console.Error.WriteLine();
+
+
 		}
 
 	
