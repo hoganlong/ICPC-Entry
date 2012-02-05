@@ -7,7 +7,10 @@ ICPC/*
 Project1/*
 bin/*
 obj/*
-
-
 History.md
 gop.zip
+TestEnvironment/opponent*.txt
+TestEnvironment/input.txt
+TestEnvironment/output.txt
+p.zip
+
