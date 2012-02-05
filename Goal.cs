@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -248,7 +248,10 @@ public class MoveMarkerToVertexGoal : BaseGoal
 		if (GoalUtility.MoveAround(me, myMarker, dest))
 		{
 			Vector2D mToD = (dest - myMarker.pos).Norm();
-			GoalUtility.MoveTo(me, myMarker.pos - mToD);
+			Vector2D contactPoint = myMarker.pos - mToD;
+			Vector2D pusherDirection = (contactPoint - me.pos).Norm();
+			pusherDirection *= (dest - myMarker.pos).Mag();
+			GoalUtility.MoveTo(me, me.pos + pusherDirection);
 		}
 	}
 
@@ -332,7 +335,10 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 		if (GoalUtility.MoveAround(me, myMarker, dest))
 		{
 			Vector2D mToD = (dest - myMarker.pos).Norm();
-			GoalUtility.MoveTo(me, myMarker.pos - mToD);
+			Vector2D contactPoint = myMarker.pos - mToD;
+			Vector2D pusherDirection = (contactPoint - me.pos).Norm();
+			pusherDirection *= (dest - myMarker.pos).Mag();
+			GoalUtility.MoveTo(me, me.pos + pusherDirection);
 		}
 	}
 
@@ -367,4 +373,3 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 		return "TurnToRed";
 	}
 }
-
