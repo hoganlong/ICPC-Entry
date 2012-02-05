@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Vertex3D
 {
 	public int x, y, z;
+	public Vector2D pos = null;
 
 	public HashSet<int> adjacentRegions = null;
 
@@ -17,6 +18,8 @@ public class Vertex3D
 		x = vx;
 		y = vy;
 		z = vz;
+
+		pos = new Vector2D(vx, vy);
 
 		adjacentRegions = new HashSet<int>();
 	}
