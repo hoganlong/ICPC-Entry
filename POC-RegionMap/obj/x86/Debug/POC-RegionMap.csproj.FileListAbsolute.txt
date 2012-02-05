@@ -1,0 +1,5 @@
+D:\WORK\git\ICPC-Challenge\POC-RegionMap\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\WORK\git\ICPC-Challenge\POC-RegionMap\bin\Debug\POC-RegionMap.exe
+D:\WORK\git\ICPC-Challenge\POC-RegionMap\bin\Debug\POC-RegionMap.pdb
+D:\WORK\git\ICPC-Challenge\POC-RegionMap\obj\x86\Debug\POC-RegionMap.exe
+D:\WORK\git\ICPC-Challenge\POC-RegionMap\obj\x86\Debug\POC-RegionMap.pdb
