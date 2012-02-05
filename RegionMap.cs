@@ -57,13 +57,21 @@ static public class RegionMap
 	{
 		int minY = 101;
 		int maxY = -1;
+		Point2D midPoint = new Point2D(0,0);
 
 		// find min and max x
 		foreach (Vertex3D v in vertexList)
 		{
 			if (v.y < minY) minY = v.y;
 			if (v.y > maxY) maxY = v.y;
+			midPoint.x += v.x;
+			midPoint.y += v.y;
 		}
+
+		// set the mid point
+		midPoint.x = (int)(midPoint.x / vertexList.Count);
+		midPoint.y = (int)(midPoint.y / vertexList.Count);
+		Map.regionList[regionNumber].midPoint = midPoint;
 
 		List<double> crossLoc = new List<double>();
 		// loop over each x

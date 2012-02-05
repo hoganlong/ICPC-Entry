@@ -7,6 +7,8 @@ class Region
 {
 	public int color = Map.UNKNOWN;
 
+	public Point2D midPoint = null;
+
 	public int[] vertexList = null; // this is a list of pointers to the vertex list in map.
 
 	public HashSet<int> markerList = new HashSet<int>();

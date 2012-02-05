@@ -377,7 +377,7 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 {
 	Pusher me = null;
 	Marker myMarker = null;
-	Vector2D dest = new Vector2D(0, 0);
+	Point2D dest = new Point2D(0,0);
 	int destRegion = 0;
 	bool donefor = false;
 
@@ -405,12 +405,12 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 			Region r = Map.regionList[regionNumber];
 			if ((r.redCount > r.blueCount) && (r.redCount > r.greyCount))
 			{
-				Point2D loc = Map.vertexList[r.vertexList[0]].pos;
+				Point2D loc = r.midPoint;
 				double d = myMarker.pos.Distance(loc);
 				if (d < goalDistance)
 				{
 					goalDistance = d;
-					dest = loc.GetAsVector();
+					dest = loc;
 					destRegion = regionNumber;
 				}
 			}
@@ -421,9 +421,9 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 	{
 		if (donefor) return;
 
-		if (GoalUtility.MoveAround(me, myMarker, dest))
+		if (GoalUtility.MoveAround(me, myMarker, dest.GetAsVector()))
 		{
-			Vector2D mToD = (dest - myMarker.pos).Norm();
+			Vector2D mToD = (dest.GetAsVector() - myMarker.pos).Norm();
 			GoalUtility.MoveTo(me, myMarker.pos - mToD);
 		}
 	}
