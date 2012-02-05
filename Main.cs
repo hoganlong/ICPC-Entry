@@ -43,40 +43,40 @@ public class Migrate
 	private void Run()
 	{
 		// Read the static parts of the map.
-		Map map = new Map();
+		//Map Map = new Map();
 
-		map.ReadStatic();
+		Map.ReadStatic();
 
-		RegionMap.Setup(map);
+		RegionMap.Setup();
    
 		int turnNum = int.Parse(IO.ReadLine());
 
-		map.pList[0].myPlan = new SwitchingPlan(map.pList[0]);
-		map.pList[1].myPlan = new SwitchingPlan(map.pList[1]);
-		map.pList[2].myPlan = new SwitchingPlan(map.pList[2]);
+		Map.pList[0].myPlan = new SwitchingPlan(Map.pList[0]);
+		Map.pList[1].myPlan = new SwitchingPlan(Map.pList[1]);
+		Map.pList[2].myPlan = new SwitchingPlan(Map.pList[2]);
   
 		while (turnNum >= 0)
 		{
-			map.ReadTurn(turnNum);
+			Map.ReadTurn(turnNum);
 
-			map.StartTurnWork(turnNum);
+			Map.StartTurnWork(turnNum);
  
 			for (int pdex = 0; pdex < Map.PCOUNT; pdex++)
 			{
-				Pusher p = map.pList[pdex];
+				Pusher p = Map.pList[pdex];
 				p.MoveThisTurn = "";
 
-				if (p.myGoal == null) p.myGoal = p.myPlan.GetNextGoal(map, turnNum);
+				if (p.myGoal == null) p.myGoal = p.myPlan.GetNextGoal(turnNum);
 				
-				if (p.myGoal.Done(map, turnNum))
+				if (p.myGoal.Done(turnNum))
 				{
 					p.myGoal.CleanUp();
 					
-					p.myGoal = p.myPlan.GetNextGoal(map,turnNum);
+					p.myGoal = p.myPlan.GetNextGoal(turnNum);
 				}
 				else
 				{
-					p.myGoal.Action(map);
+					p.myGoal.Action();
 				}
   
 				if (p.MoveThisTurn == "")

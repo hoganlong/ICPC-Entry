@@ -38,16 +38,16 @@ static public class RegionMap
 	}
 
 	// Does the work of setting up the map... for each region do a line scan and add to points.
-	static public void Setup(Map map)
+	static public void Setup()
 	{
 		// loop for each region
-		for (int regionNumber = 0; regionNumber < map.regionList.Length; regionNumber++)
+		for (int regionNumber = 0; regionNumber < Map.regionList.Length; regionNumber++)
 		{
 			List<Vertex3D> vertexList= new List<Vertex3D>();
 			
 			// Make a list of points
-			for (int index = 0; index < map.regionList[regionNumber].vertexList.Length; index++)
-				vertexList.Add(map.vertexList[map.regionList[regionNumber].vertexList[index]]);
+			for (int index = 0; index < Map.regionList[regionNumber].vertexList.Length; index++)
+				vertexList.Add(Map.vertexList[Map.regionList[regionNumber].vertexList[index]]);
 
 			ScanARegion(regionNumber, vertexList);
 		}

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class Map
+static public class Map
 {
 	// Number of pushers per side.
 	public const int PCOUNT = 3;
@@ -10,7 +10,7 @@ public class Map
 	public const int MCOUNT = 22;
 
 	// Current game score, for red and blue
-	public int[] score = new int[2];
+	static public int[] score = new int[2];
 
 	// Color value for the red player.
 	public const int RED = 0;
@@ -25,17 +25,17 @@ public class Map
 	public const int UNKNOWN = -1;
 
 
-	internal HashSet<int> candidates = new HashSet<int>();
-	internal Vertex3D[] vertexList=null;
-	internal Vector2D[] vertexPoints=null;
-	internal Marker[] mList=null;
-	internal Pusher[] pList = null;
-	internal int[] vertexColors = null;
+	static internal HashSet<int> candidates = new HashSet<int>();
+	static internal Vertex3D[] vertexList=null;
+	static internal Vector2D[] vertexPoints=null;
+	static internal Marker[] mList=null;
+	static internal Pusher[] pList = null;
+	static internal int[] vertexColors = null;
 
-	internal Region[] regionList = null;
+	static internal Region[] regionList = null;
 
 	// Internal change events (we could use an event model, but I'm lazy.
-	internal void RegionColorChanged(int regionNumber, int oldColor, int newColor)
+	static internal void RegionColorChanged(int regionNumber, int oldColor, int newColor)
 	{
 		// fix up vertex colors for all vertex which we touch
 		for (int regionVertextNumber = 0; regionVertextNumber < regionList[regionNumber].vertexList.Length; regionVertextNumber++)
@@ -73,7 +73,7 @@ public class Map
 
 	}
 
-	internal void MarkerColorChanged(int markerNumber, int oldColor, int newColor)
+	static internal void MarkerColorChanged(int markerNumber, int oldColor, int newColor)
 	{
 		foreach (int regionIndex in mList[markerNumber].myRegions)
 		{
@@ -106,7 +106,7 @@ public class Map
 	}
 
 	
-	internal void RegionListChanged(int markerNumber, HashSet<int> newRegionList)
+	static internal void RegionListChanged(int markerNumber, HashSet<int> newRegionList)
 	{
 		HashSet<int> oldRegionList = mList[markerNumber].myRegions;
 
@@ -157,7 +157,7 @@ public class Map
 	}
 
 	// Runs once before first turn
-	internal void ReadStatic()
+	static internal void ReadStatic()
 	{
 		// Read the list of vertex locations.
 		int n = int.Parse(IO.ReadLine());
@@ -211,11 +211,11 @@ public class Map
 	}
 
 	// Runs every turn
-	internal void ReadTurn(int turnNum)
+	static internal void ReadTurn(int turnNum)
 	{
 		string[] tokens = IO.ReadLine().Split();
-		score[RED] = int.Parse(tokens[0]);
-		score[BLUE] = int.Parse(tokens[1]);
+		Map.score[RED] = int.Parse(tokens[0]);
+		Map.score[BLUE] = int.Parse(tokens[1]);
 
 		// Read all the region colors.
 		tokens = IO.ReadLine().Split();
@@ -270,7 +270,7 @@ public class Map
 
 	}
  
-	internal void StartTurnWork(int turnNum)
+	static internal void StartTurnWork(int turnNum)
 	{
 		if (turnNum == 0)
 		{

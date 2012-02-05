@@ -12,7 +12,7 @@ public abstract class BasePlan
 		myP = p;
 	}
 
-	abstract public BaseGoal GetNextGoal(Map m,int turnNumber);
+	abstract public BaseGoal GetNextGoal(int turnNumber);
 }
 
 // Switch between getting vertex and converting grey.
@@ -25,26 +25,26 @@ public class SwitchingPlan : BasePlan
 	{
 	}
 
-	public override BaseGoal GetNextGoal(Map map, int turnNum)
+	public override BaseGoal GetNextGoal(int turnNum)
 	{
 		if (lastGoal == null)
 		{
-			lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+			lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
 		}
 		else
 		{
 			if (lastGoal.Name() == "MoveToVertex")
 			{
-				lastGoal = new TurnGreyMarkerRedGoal(map, myP, turnNum);
-				if (lastGoal.Done(map, turnNum))
+				lastGoal = new TurnGreyMarkerRedGoal(myP, turnNum);
+				if (lastGoal.Done(turnNum))
 				{
 					lastGoal.CleanUp();
-					lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+					lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
 				}
 			}
 			else // oldName == "TurnToRed"
 			{
-				lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+				lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
 			}
 		}
 
@@ -64,26 +64,26 @@ public class SwitchingPlan2 : BasePlan
 	{
 	}
 
-	public override BaseGoal GetNextGoal(Map map, int turnNum)
+	public override BaseGoal GetNextGoal(int turnNum)
 	{
 		if (lastGoal == null)
 		{
-			lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+			lastGoal = new MoveMarkerToVertexGoal( myP, turnNum);
 		}
 		else
 		{
 			if (lastGoal.Name() == "MoveToVertex")
 			{
-				lastGoal = new TurnGreyMarkerRedGoal2(map, myP, turnNum);
-				if (lastGoal.Done(map, turnNum))
+				lastGoal = new TurnGreyMarkerRedGoal2(myP, turnNum);
+				if (lastGoal.Done(turnNum))
 				{
 					lastGoal.CleanUp();
-					lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+					lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
 				}
 			}
 			else // oldName == "TurnToRed"
 			{
-				lastGoal = new MoveMarkerToVertexGoal(map, myP, turnNum);
+				lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
 			}
 		}
 

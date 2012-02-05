@@ -26,18 +26,18 @@ class GoalUtility
 	// Marker velocity lost per turn
 	const double MARKER_FRICTION = 0.35;
 
-	static public int PickAVertex(Map map, Vector2D near2)
+	static public int PickAVertex(Vector2D near2)
 	{
 		// assume we have at least one element in candidates
 		int choice = 0;
 		double distance = double.NaN;
 		double choiceDistance = double.PositiveInfinity;
 
-		foreach (int item in map.candidates)
+		foreach (int item in Map.candidates)
 		{
-			if (map.vertexList[item].target == false)
+			if (Map.vertexList[item].target == false)
 			{
-				distance = map.vertexPoints[item].Distance(near2);
+				distance = Map.vertexPoints[item].Distance(near2);
 
 				if (distance < choiceDistance)
 				{
@@ -47,23 +47,23 @@ class GoalUtility
 			}
 		}
  
-		map.candidates.Remove(choice);
+		Map.candidates.Remove(choice);
 
 		return choice;
 	}
 
-	static public int FindNearest(Map map, Vector2D near2, int color)
+	static public int FindNearest(Vector2D near2, int color)
 	{
 		bool first = true;
 		int choice = -1;
 		double distance = 0.0;
 		double choiceDistance = 0.0;
 
-		for (int index = 0; index < map.mList.Length; index++)
+		for (int index = 0; index < Map.mList.Length; index++)
 		{
-			if ((map.mList[index].beingUsedBy == null) && (map.mList[index].color == color))
+			if ((Map.mList[index].beingUsedBy == null) && (Map.mList[index].color == color))
 			{
-				distance = map.mList[index].pos.Distance(near2);
+				distance = Map.mList[index].pos.Distance(near2);
 
 				if (first || (distance < choiceDistance))
 				{
@@ -203,15 +203,15 @@ public abstract class BaseGoal
 	internal int startTime = 0;
 	internal Vector2D startLoc = null;
 
-	public BaseGoal(Map map, Pusher me,int turn)
+	public BaseGoal(Pusher me,int turn)
 	{
 		startTime = turn;
 		startLoc = me.pos;
 	}
 
-	abstract public void Action(Map map);
+	abstract public void Action();
 
-	abstract public bool Done(Map map, int turn);
+	abstract public bool Done(int turn);
 
 	abstract public void CleanUp(); // should make disposable
 
@@ -226,22 +226,22 @@ public class MoveMarkerToVertexGoal : BaseGoal
 	Vector2D dest = null;
 	Pusher me = null;
 
-	public MoveMarkerToVertexGoal(Map map, Pusher inMe, int turn) : base(map,inMe,turn)
+	public MoveMarkerToVertexGoal(Pusher inMe, int turn) : base(inMe,turn)
 	{
 		me = inMe;
 
 		// Find a marker to move
-		myMarker = map.mList[GoalUtility.FindNearest(map, me.pos, Map.RED)];
+		myMarker = Map.mList[GoalUtility.FindNearest(me.pos, Map.RED)];
 		myMarker.beingUsedBy = this;
 
 		// Find a place to push it.
-		targetVertextSeq = GoalUtility.PickAVertex(map, myMarker.pos);
-		targetVertex = map.vertexList[targetVertextSeq];
+		targetVertextSeq = GoalUtility.PickAVertex(myMarker.pos);
+		targetVertex = Map.vertexList[targetVertextSeq];
 		targetVertex.target = true;	 // we should fix this make me the user.
 		dest = new Vector2D(targetVertex.x, targetVertex.y);
 	}
 
-	public override  void Action(Map map)
+	public override  void Action()
 	{
 		if (GoalUtility.MoveAround(me, myMarker, dest))
 		{
@@ -253,14 +253,14 @@ public class MoveMarkerToVertexGoal : BaseGoal
 		}
 	}
 
-	public override bool Done(Map map, int turn)
+	public override bool Done(int turn)
 	{
 		// we should check to see if we have not gotten anywhere
 
 		if (turn > startTime + 60)
 			return true;
 
-		if (map.vertexColors[targetVertextSeq] == 1) 
+		if (Map.vertexColors[targetVertextSeq] == 1) 
 			return true; // it converted while I was moving
 
 	    if ((myMarker.pos.Distance(dest) < 2.0) && (myMarker.pos.x > 2 && myMarker.pos.y > 2)) 
@@ -308,25 +308,25 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 	Vector2D dest = new Vector2D(0, 0);
 	bool donefor = false;
 
-	public TurnGreyMarkerRedGoal(Map map, Pusher inMe, int turn) : base(map, inMe, turn)
+	public TurnGreyMarkerRedGoal(Pusher inMe, int turn) : base(inMe, turn)
 	{
 		me = inMe;
 
 		// Find a marker to move
-		int tmp = GoalUtility.FindNearest(map, me.pos, Map.GREY);
+		int tmp = GoalUtility.FindNearest(me.pos, Map.GREY);
 		if (tmp == -1)
-     		tmp = GoalUtility.FindNearest(map, me.pos, Map.BLUE);
+     		tmp = GoalUtility.FindNearest(me.pos, Map.BLUE);
 		if (tmp == -1)
 			donefor = true;
 		else
 		{
-			myMarker = map.mList[tmp];
+			myMarker = Map.mList[tmp];
 
 			myMarker.beingUsedBy = this;
 		}
 	}
 
-	public override void Action(Map map)
+	public override void Action()
 	{
 		if (donefor) return;
 
@@ -340,7 +340,7 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 		}
 	}
 
-	public override bool Done(Map map, int turn)
+	public override bool Done(int turn)
 	{
 		// we should check to see if we have not gotten anywhere
 
@@ -381,32 +381,31 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 	int destRegion = 0;
 	bool donefor = false;
 
-	public TurnGreyMarkerRedGoal2(Map map, Pusher inMe, int turn)
-		: base(map, inMe, turn)
+	public TurnGreyMarkerRedGoal2(Pusher inMe, int turn) : base(inMe, turn)
 	{
 		me = inMe;
 
 		// Find a marker to move
-		int tmp = GoalUtility.FindNearest(map, me.pos, Map.GREY);
+		int tmp = GoalUtility.FindNearest(me.pos, Map.GREY);
 		if (tmp == -1)
-			tmp = GoalUtility.FindNearest(map, me.pos, Map.BLUE);
+			tmp = GoalUtility.FindNearest(me.pos, Map.BLUE);
 		if (tmp == -1)
 			donefor = true;
 		else
 		{
-			myMarker = map.mList[tmp];
+			myMarker = Map.mList[tmp];
 
 			myMarker.beingUsedBy = this;
 		}
 
 		double goalDistance = myMarker.pos.Distance(dest);
  		// find nearest area to move to -- for now lets do a brute force search	for the closest that returns red.
-		for (int regionNumber = 1; regionNumber < map.regionList.Length; regionNumber++)
+		for (int regionNumber = 1; regionNumber < Map.regionList.Length; regionNumber++)
 		{
-			Region r = map.regionList[regionNumber];
+			Region r = Map.regionList[regionNumber];
 			if ((r.redCount > r.blueCount) && (r.redCount > r.greyCount))
 			{
-				Vector2D loc = map.vertexList[r.vertexList[0]].pos;
+				Vector2D loc = Map.vertexList[r.vertexList[0]].pos;
 				double d = myMarker.pos.Distance(loc);
 				if (d < goalDistance)
 				{
@@ -418,7 +417,7 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 		}
 	}
 
-	public override void Action(Map map)
+	public override void Action()
 	{
 		if (donefor) return;
 
@@ -429,7 +428,7 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 		}
 	}
 
-	public override bool Done(Map map, int turn)
+	public override bool Done(int turn)
 	{
 		// we should check to see if we have not gotten anywhere
 
@@ -462,7 +461,7 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 		// check if we are in a red area anyway.
 		if (regionsTouched.Count == 1)
 		{
-			Region r = map.regionList[regionsTouched.First()];
+			Region r = Map.regionList[regionsTouched.First()];
 			if ((r.redCount > r.blueCount) && (r.redCount > r.greyCount))
 				return true;
 		}
