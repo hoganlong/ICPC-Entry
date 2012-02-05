@@ -179,7 +179,7 @@ class GoalUtility
 		// Figure out how far around the target we need to go, we're
 		// going to move around a little bit at a time so we don't hit
 		// the target.
-		double moveAngle = Math.Acos(mToT * mToP);
+		double moveAngle = Math.PI - Math.Acos(mToT * mToP);
 		if (moveAngle > Math.PI * 0.25)
 			moveAngle = Math.PI * 0.25;
 

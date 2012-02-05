@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ $# -gt 1 ]; then
+	java -jar coercion.jar -player pipe 1 ../"${1}".exe -player pipe 1 ../"${2}".exe 
+else
+	java -jar coercion.jar -player pipe 1 ../"${1}".exe -player java -cp java_example Migrate 
+fi
+
+
