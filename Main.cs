@@ -46,6 +46,8 @@ public class Migrate
 		Map map = new Map();
 
 		map.ReadStatic();
+
+		RegionMap.Setup(map);
    
 		int turnNum = int.Parse(IO.ReadLine());
 
