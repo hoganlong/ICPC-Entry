@@ -51,8 +51,8 @@ public class Migrate
    
 		int turnNum = int.Parse(IO.ReadLine());
 
-		Map.pList[0].myPlan = new SwitchingPlan2(Map.pList[0]);
-		Map.pList[1].myPlan = new SwitchingPlan2(Map.pList[1]);
+		Map.pList[0].myPlan = new SwitchingPlan(Map.pList[0]);
+		Map.pList[1].myPlan = new SwitchingPlan(Map.pList[1]);
 		Map.pList[2].myPlan = new SwitchingPlan2(Map.pList[2]);
   
 		while (turnNum >= 0)

@@ -59,6 +59,8 @@ static public class RegionMap
 		int maxY = -1;
 		Point2D midPoint = new Point2D(0,0);
 
+	//	IO.ErrorWrite("region " + regionNumber.ToString()+" Vs: ");
+
 		// find min and max x
 		foreach (Vertex3D v in vertexList)
 		{
@@ -66,12 +68,14 @@ static public class RegionMap
 			if (v.y > maxY) maxY = v.y;
 			midPoint.x += v.x;
 			midPoint.y += v.y;
+		//	IO.ErrorWrite(v.x.ToString() + "," + v.y.ToString() + " ");
 		}
 
 		// set the mid point
 		midPoint.x = (int)(midPoint.x / vertexList.Count);
 		midPoint.y = (int)(midPoint.y / vertexList.Count);
 		Map.regionList[regionNumber].midPoint = midPoint;
+	//	IO.ErrorWriteLine("mid="+midPoint.x.ToString() + "," + midPoint.y.ToString() + " ");
 
 		List<double> crossLoc = new List<double>();
 		// loop over each x

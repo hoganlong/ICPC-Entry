@@ -33,16 +33,21 @@ class GoalUtility
 		double distance = double.NaN;
 		double choiceDistance = double.PositiveInfinity;
 
-		foreach (int item in Map.candidates)
+		foreach (int vertexNum in Map.candidates)
 		{
-			if (Map.vertexList[item].target == false)
+			if (Map.vertexList[vertexNum].target == false)
 			{
-				distance = Map.vertexPoints[item].Distance(near2);
-
-				if (distance < choiceDistance)
+				// we should not have to recheck this...
+				if (((Map.vertexColors[vertexNum] & 0x1) == 1) && (Map.vertexColors[vertexNum] != 1))
 				{
-					choice = item;
-					choiceDistance = distance;
+
+					distance = Map.vertexPoints[vertexNum].Distance(near2);
+
+					if (distance < choiceDistance)
+					{
+						choice = vertexNum;
+						choiceDistance = distance;
+					}
 				}
 			}
 		}
@@ -390,12 +395,16 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 		if (tmp == -1)
 			tmp = GoalUtility.FindNearest(me.pos, Map.BLUE);
 		if (tmp == -1)
+		{
 			donefor = true;
+			return;
+		}
 		else
 		{
 			myMarker = Map.mList[tmp];
 
 			myMarker.beingUsedBy = this;
+
 		}
 
 		double goalDistance = myMarker.pos.Distance(dest);
@@ -475,7 +484,10 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 	public override void CleanUp()
 	{
 		if (myMarker != null)
+		{
 			myMarker.beingUsedBy = null;
+			myMarker = null;
+		}
 	}
 
 	public override string Name()

@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-class IO
+static class IO
 {
 	internal static StreamWriter inputEcho=null;
 	internal static StreamWriter outputEcho=null;
 
 	static IO()
 	{
-		inputEcho = File.CreateText("input.txt");
+	//	inputEcho = File.CreateText("input.txt");
 
-		outputEcho = File.CreateText("output.txt");
+	//	outputEcho = File.CreateText("output.txt");
 	}
 
 	static public string ReadLine()
