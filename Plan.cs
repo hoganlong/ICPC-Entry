@@ -56,8 +56,6 @@ public class SwitchingPlan : BasePlan
 // now we don't move home for turn grey red.
 public class SwitchingPlan2 : BasePlan
 {
-	BaseGoal lastGoal = null;
-
 	public SwitchingPlan2(Pusher me) : base(me)
 	{
 	}
@@ -85,6 +83,6 @@ public class SwitchingPlan2 : BasePlan
 		}
 
 
-		return lastGoal;
+		return nextGoal;
 	}
 }
