@@ -6,10 +6,13 @@ using System.Text;
 public abstract class BasePlan
 {
 	internal Pusher myP = null;
+	internal string state = "";
+	
 
 	public BasePlan(Pusher p)
 	{
 		myP = p;
+		state = "Initial";
 	}
 
 	abstract public BaseGoal GetNextGoal(int turnNumber);
@@ -19,36 +22,32 @@ public abstract class BasePlan
 // Same plan from the start -- the most basic strategy.
 public class SwitchingPlan : BasePlan
 {
-	BaseGoal lastGoal = null;
-
 	public SwitchingPlan(Pusher me) : base(me)
 	{
 	}
 
 	public override BaseGoal GetNextGoal(int turnNum)
 	{
-		if (lastGoal == null)
+		BaseGoal nextGoal = null;
+
+		if (state == "MoveToVertex")
 		{
-			lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
+			nextGoal = new TurnGreyMarkerRedGoal(myP, turnNum);
+			state = "MoveToRed";
+			if (nextGoal.Done(turnNum))
+			{
+				nextGoal.CleanUp();
+				nextGoal = new MoveMarkerToVertexGoal(myP, turnNum);
+				state = "MoveToVertex";
+			}
 		}
-		else
+		else 
 		{
-			if (lastGoal.Name() == "MoveToVertex")
-			{
-				lastGoal = new TurnGreyMarkerRedGoal(myP, turnNum);
-				if (lastGoal.Done(turnNum))
-				{
-					lastGoal.CleanUp();
-					lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
-				}
-			}
-			else // oldName == "TurnToRed"
-			{
-				lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
-			}
+			nextGoal = new MoveMarkerToVertexGoal(myP, turnNum);
+			state = "MoveToVertex";
 		}
 
-		return lastGoal;
+		return nextGoal;
 	}
 }
 
@@ -59,33 +58,32 @@ public class SwitchingPlan2 : BasePlan
 {
 	BaseGoal lastGoal = null;
 
-	public SwitchingPlan2(Pusher me)
-		: base(me)
+	public SwitchingPlan2(Pusher me) : base(me)
 	{
 	}
 
 	public override BaseGoal GetNextGoal(int turnNum)
 	{
-		if (lastGoal == null)
+		BaseGoal nextGoal = null;
+
+
+		if (state == "MoveToVertex")
 		{
-			lastGoal = new MoveMarkerToVertexGoal( myP, turnNum);
-		}
-		else
-		{
-			if (lastGoal.Name() == "MoveToVertex")
+			nextGoal = new TurnGreyMarkerRedGoal2(myP, turnNum);
+			state = "MoveToRed";
+			if (nextGoal.Done(turnNum))
 			{
-				lastGoal = new TurnGreyMarkerRedGoal2(myP, turnNum);
-				if (lastGoal.Done(turnNum))
-				{
-					lastGoal.CleanUp();
-					lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
-				}
-			}
-			else // oldName == "TurnToRed"
-			{
-				lastGoal = new MoveMarkerToVertexGoal(myP, turnNum);
+				nextGoal.CleanUp();
+				nextGoal = new MoveMarkerToVertexGoal(myP, turnNum);
+				state = "MoveToVertex";
 			}
 		}
+		else // oldName == "TurnToRed"
+		{
+			nextGoal = new MoveMarkerToVertexGoal(myP, turnNum);
+			state = "MoveToVertex";
+		}
+
 
 		return lastGoal;
 	}

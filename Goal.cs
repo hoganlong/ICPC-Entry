@@ -220,7 +220,7 @@ public abstract class BaseGoal
 
 	abstract public void CleanUp(); // should make disposable
 
-	abstract public string Name();
+	//abstract public string Name();
 }
 
 public class MoveMarkerToVertexGoal : BaseGoal
@@ -300,10 +300,10 @@ public class MoveMarkerToVertexGoal : BaseGoal
 		  targetVertex.target = false;
 	}
 
-	public override string Name()
-	{
-		return "MoveToVertex";
-	}
+	//public override string Name()
+	//{
+	//    return "MoveToVertex";
+	//}
 }
 
 public class TurnGreyMarkerRedGoal : BaseGoal
@@ -371,10 +371,10 @@ public class TurnGreyMarkerRedGoal : BaseGoal
 			myMarker.beingUsedBy = null;
 	}
 
-	public override string Name()
-	{
-		return "TurnToRed";
-	}
+	//public override string Name()
+	//{
+	//    return "TurnToRed";
+	//}
 }
 
 
@@ -490,8 +490,8 @@ public class TurnGreyMarkerRedGoal2 : BaseGoal
 		}
 	}
 
-	public override string Name()
-	{
-		return "TurnToRed";
-	}
+	//public override string Name()
+	//{
+	//    return "TurnToRed";
+	//}
 }
