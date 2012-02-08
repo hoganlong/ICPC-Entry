@@ -9,9 +9,9 @@ bin/*
 obj/*
 History.md
 gop.zip
+p.zip
+Main.exe.mdb
 TestEnvironment/opponent*.txt
 TestEnvironment/input.txt
 TestEnvironment/output.txt
-p.zip
-
 TestEnvironment/turns.txt
