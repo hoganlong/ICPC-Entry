@@ -59,7 +59,11 @@ public class Point2D
 // Simple representation for a vertex of the map.
 public class Vertex3D
 {
+	public int num; // my number, helps with reports and foreach loops
+
 	public int x, y, z;
+	public int adjacentColorMap = 0;
+
 	public Point2D pos = null;
 
 	public HashSet<int> adjacentRegions = null;
@@ -67,8 +71,10 @@ public class Vertex3D
    public bool target = false;
 
 	// make a 3D vertex with the given coordinates
-	public Vertex3D(int vx, int vy, int vz)
+	public Vertex3D(int mynum,int vx, int vy, int vz)
 	{
+		num = mynum;
+
 		x = vx;
 		y = vy;
 		z = vz;
@@ -76,5 +82,39 @@ public class Vertex3D
 		pos = new Point2D(vx, vy);
 
 		adjacentRegions = new HashSet<int>();
+	}
+
+	public bool AllAdjacentRed()
+	{
+
+		foreach (int rNum in adjacentRegions)
+		{
+			if (Map.regionList[rNum].color != Map.RED)
+				return false;
+		}
+
+		return true;
+	}
+
+	public string Short2D()
+	{
+		System.Text.StringBuilder result = new System.Text.StringBuilder();
+
+		result.Append(" V"+num.ToString()+"@(" + pos.x.ToString("#,0.0") + "," + pos.y.ToString("#,0.0") + ")" + (target == true ? " Target" : ""));
+
+
+        if (AllAdjacentRed()) result.Append(" ALL RED ");
+
+		//bool hasNonRed = false;
+
+		//foreach (int rNum in adjacentRegions)
+		//{
+		//    result.Append(" r" + rNum.ToString() + "-" + Map.regionList[rNum].color.ToString());
+		//    if (Map.regionList[rNum].color != Map.RED)
+		//        hasNonRed = true;
+		//}
+		//if (hasNonRed == false) result.Append(" ALL RED ");
+
+		return result.ToString();
 	}
 };

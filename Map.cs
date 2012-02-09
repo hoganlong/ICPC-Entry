@@ -27,10 +27,9 @@ static public class Map
 
 	static internal HashSet<int> candidates = new HashSet<int>();
 	static internal Vertex3D[] vertexList=null;
-	static internal Vector2D[] vertexPoints=null;
 	static internal Marker[] mList=null;
 	static internal Pusher[] pList = null;
-	static internal int[] vertexColors = null;
+//	static internal int[] vertexColors = null;
 
 	static internal Region[] regionList = null;
 
@@ -44,19 +43,19 @@ static public class Map
 			int vertexNum = regionList[regionNumber].vertexList[regionVertextNumber];
 
 			// clear the color
-			vertexColors[vertexNum] = 0;
+			vertexList[vertexNum].adjacentColorMap = 0;
 
 			// loop over the touching regions and set vertexColors
 			foreach (int region in vertexList[vertexNum].adjacentRegions)
 			{
 				if (regionList[region].color == 0)
-					vertexColors[vertexNum] |= 1;
+					vertexList[vertexNum].adjacentColorMap |= 1;
 				else
-					vertexColors[vertexNum] |= (1 << regionList[region].color);
+					vertexList[vertexNum].adjacentColorMap |= (1 << regionList[region].color);
 			}
 
 			// Candidate vertices for putting a marker on, vertices that have some red but are not all red.
-			if (((vertexColors[vertexNum] & 0x1) == 1) && (vertexColors[vertexNum] != 1)) 
+			if (((vertexList[vertexNum].adjacentColorMap & 0x1) == 1) && (vertexList[vertexNum].adjacentColorMap != 1))
 			{
 				candidates.Add(vertexNum);
 			}
@@ -67,8 +66,22 @@ static public class Map
 					candidates.Remove(vertexNum);
 				}
 			}
-		
+
 		}
+
+		//IO.ErrorWrite("Candiates: ");
+		//foreach (int x in candidates)
+		//{
+		//    IO.ErrorWrite(x.ToString() + " ");
+		//}
+		//string tmp = "";
+		//foreach (int x in candidates)
+		//{
+		//    if (Map.vertexList[x].AllAdjacentRed()) tmp += " "+x.ToString();
+		//}
+		//if (tmp.Length > 0)
+		//    IO.ErrorWrite("All red -" + tmp);
+		//IO.ErrorWriteLine("");
 
 
 	}
@@ -164,21 +177,18 @@ static public class Map
 
 		// List of points in the map.
 		vertexList = new Vertex3D[n];
-		vertexPoints = new Vector2D[n];
-		vertexColors = new int[n];
+	//	vertexColors = new int[n];
 
 		for (int i = 0; i < n; i++)
 		{
 			string[] tokens = IO.ReadLine().Split();
-			vertexList[i] = new Vertex3D(int.Parse(tokens[0]), int.Parse(tokens[1]), int.Parse(tokens[2]));
-			vertexPoints[i] = new Vector2D(int.Parse(tokens[0]), int.Parse(tokens[1]));
-			vertexColors[i] = 0;
+			vertexList[i] = new Vertex3D(i,int.Parse(tokens[0]), int.Parse(tokens[1]), int.Parse(tokens[2]));
+//			vertexList[i].adjacentColorMap  = 0;
 		}
 		//Console.Error.Write("VertexColors: ");
 		//foreach (int x in vertexColors) Console.Error.Write(" " + x.ToString());
 		//Console.Error.WriteLine();
-
-
+	
 		// Read the list of region outlines.
 		n = int.Parse(IO.ReadLine());
 		// List of regions in the map
@@ -187,7 +197,7 @@ static public class Map
 		{
 			string[] tokens = IO.ReadLine().Split();
 			int vertexCount = int.Parse(tokens[0]);
-			regionList[regionNumber] = new Region();
+			regionList[regionNumber] = new Region(regionNumber);
       		regionList[regionNumber].vertexList = new int[vertexCount];
 			for (int rVertextNumber = 0; rVertextNumber < vertexCount; rVertextNumber++)
 			{
@@ -202,10 +212,10 @@ static public class Map
 		//regionColors = new int[regionList.Length];
 		pList = new Pusher[2 * PCOUNT];
 		for (int i = 0; i < pList.Length; i++)
-			pList[i] = new Pusher();
+			pList[i] = new Pusher(i);
 		mList = new Marker[MCOUNT];
 		for (int i = 0; i < mList.Length; i++)
-			mList[i] = new Marker();
+			mList[i] = new Marker(i);
 
 	
 	}
@@ -225,8 +235,8 @@ static public class Map
 			int c = int.Parse(tokens[i + 1]);
 			if (regionList[i].color != c)
 			{
-				if (turnNum != 0) RegionColorChanged(i, regionList[i].color, c);
 				regionList[i].color = c;
+				if (turnNum != 0) RegionColorChanged(i, regionList[i].color, c);
 			}
 		}
 
@@ -275,14 +285,13 @@ static public class Map
 		if (turnNum == 0)
 		{
 			// Compute a bit vector for the region colors incident on each vertex.
-			vertexColors = new int[vertexList.Length];
 			for (int regionNumber = 0; regionNumber < regionList.Length; regionNumber++)
 				for (int rVertextNumber = 0; rVertextNumber < regionList[regionNumber].vertexList.Length; rVertextNumber++)
 				{
 					if (regionList[regionNumber].color == 0)
-						vertexColors[regionList[regionNumber].vertexList[rVertextNumber]] |= 1;
+						vertexList[regionList[regionNumber].vertexList[rVertextNumber]].adjacentColorMap |= 1;
 					else
-						vertexColors[regionList[regionNumber].vertexList[rVertextNumber]] |= (1 << regionList[regionNumber].color);
+						vertexList[regionList[regionNumber].vertexList[rVertextNumber]].adjacentColorMap |= (1 << regionList[regionNumber].color);
 				}
 
 			//Console.Error.Write("VertexColors-1: ");
@@ -293,10 +302,17 @@ static public class Map
 			// some red but are not all red.
 			candidates.Clear();
 			for (int i = 0; i < vertexList.Length; i++)
-				if (((vertexColors[i] & 0x1) == 1) && (vertexColors[i] != 1)) //&& (vertex[i].pos.x != 0) && (vertex[i].pos.y != 0))
+				if (((vertexList[i].adjacentColorMap & 0x1) == 1) && (vertexList[i].adjacentColorMap != 1)) //&& (vertex[i].pos.x != 0) && (vertex[i].pos.y != 0))
 				{
 					candidates.Add(i);
 				}
+
+			//IO.ErrorWrite("Candiates: ");
+			//foreach (int x in candidates)
+			//{
+			//    IO.ErrorWrite(x.ToString() + " ");
+			//}
+			//IO.ErrorWriteLine("");
 
 			for (int mIndex = 0; mIndex < mList.Length; mIndex++)
 			{
