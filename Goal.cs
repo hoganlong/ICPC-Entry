@@ -38,10 +38,10 @@ class GoalUtility
 			if (Map.vertexList[vertexNum].target == false)
 			{
 				// we should not have to recheck this...
-				if (((Map.vertexColors[vertexNum] & 0x1) == 1) && (Map.vertexColors[vertexNum] != 1))
+				if (((Map.vertexList[vertexNum].adjacentColorMap & 0x1) == 1) && (Map.vertexList[vertexNum].adjacentColorMap != 1))
 				{
 
-					distance = Map.vertexPoints[vertexNum].Distance(near2);
+					distance = Map.vertexList[vertexNum].pos.Distance(near2);
 
 					if (distance < choiceDistance)
 					{
@@ -235,15 +235,20 @@ public class MoveMarkerToVertexGoal : BaseGoal
 	{
 		me = inMe;
 
+		//IO.ErrorWrite("MoveMarkerToVertexGoal P#" + me.num.ToString());
 		// Find a marker to move
 		myMarker = Map.mList[GoalUtility.FindNearest(me.pos, Map.RED)];
 		myMarker.beingUsedBy = this;
 
+		//IO.ErrorWrite(myMarker.Short());
+
 		// Find a place to push it.
 		targetVertextSeq = GoalUtility.PickAVertex(myMarker.pos);
 		targetVertex = Map.vertexList[targetVertextSeq];
+		//IO.ErrorWrite(targetVertex.Short2D());
 		targetVertex.target = true;	 // we should fix this make me the user.
 		dest = new Vector2D(targetVertex.x, targetVertex.y);
+		//IO.ErrorWriteLine("");
 	}
 
 	public override  void Action()
@@ -265,7 +270,7 @@ public class MoveMarkerToVertexGoal : BaseGoal
 		if (turn > startTime + 60)
 			return true;
 
-		if (Map.vertexColors[targetVertextSeq] == 1) 
+		if (Map.vertexList[targetVertextSeq].adjacentColorMap == 1) 
 			return true; // it converted while I was moving
 
 	    if ((myMarker.pos.Distance(dest) < 2.0) && (myMarker.pos.x > 2 && myMarker.pos.y > 2)) 
